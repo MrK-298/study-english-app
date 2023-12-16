@@ -39,9 +39,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(
-                    height: 100,
-                  ),
+                  SizedBox(height: 100),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
                     child: Container(

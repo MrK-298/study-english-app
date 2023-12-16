@@ -52,7 +52,7 @@ class MapSampleState extends State<MapSample> {
                     });
                   },
                   onSelected: (String selectedItem) {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>

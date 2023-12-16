@@ -3,6 +3,7 @@ import 'package:english/data/partofspeechdata.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:translator/translator.dart';
 
 class WordDetailPage extends StatefulWidget {
   final String word;
@@ -23,6 +24,8 @@ class _WordDetailState extends State<WordDetailPage> {
   List<List<String>> antonymsList = [];
   List<String> examples = [];
   List<PartOfSpeechData> partOfSpeechDataList = [];
+  GoogleTranslator translator = new GoogleTranslator();
+  String out = "";
   @override
   void initState() {
     super.initState();
@@ -31,6 +34,26 @@ class _WordDetailState extends State<WordDetailPage> {
     getWordDetails();
   }
 
+  //Translate
+  Future<void> translatetext(String text) async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.mymemory.translated.net/get?q=$text&langpair=en|vi'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('responseData')) {
+        setState(() {
+          out = data['responseData']['translatedText'];
+        });
+      }
+    }
+  }
+
+  //Lấy chi tiết từ
   Future<void> getWordDetails() async {
     final response = await http.get(
       Uri.parse(
@@ -44,6 +67,7 @@ class _WordDetailState extends State<WordDetailPage> {
       List<dynamic> data = json.decode(response.body);
       setState(() {
         word = data[0]['word'];
+        translatetext(word);
         pronunciations.add(data[0]['phonetic'].toString());
         for (var meaning in data[0]['meanings']) {
           List<DefinitionData> meaningDefinitions = [];
@@ -114,7 +138,7 @@ class _WordDetailState extends State<WordDetailPage> {
             child: Column(
               children: [
                 ListTile(
-                  title: Text('$word', style: TextStyle(fontSize: 20)),
+                  title: Text('$word\t:\t$out', style: TextStyle(fontSize: 20)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: pronunciations
@@ -136,10 +160,24 @@ class _WordDetailState extends State<WordDetailPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (definitionData.definition.isNotEmpty)
-                                Text(
-                                    'Nghĩa: ${definitionData.definition.isNotEmpty ? definitionData.definition : ''}',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black)),
+                                FutureBuilder<void>(
+                                  future:
+                                      translatetext(definitionData.definition),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      // Hiển thị Text khi Future hoàn thành
+                                      return Text(
+                                        'Định nghĩa: ${definitionData.definition}\n($out)',
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.black),
+                                      );
+                                    } else {
+                                      // Hiển thị một Widget khác trong quá trình loading
+                                      return CircularProgressIndicator();
+                                    }
+                                  },
+                                ),
                               if (definitionData.synonyms.isNotEmpty)
                                 Text(
                                     '\nTừ đồng nghĩa: ${definitionData.synonyms.join('\t,')}',
