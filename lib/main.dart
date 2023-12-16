@@ -1,9 +1,7 @@
-
 import 'dart:io';
 import 'package:english/WordDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:english/sdk/DictReduceSA.dart';
-import 'package:http/http.dart' as http;
 
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
@@ -13,6 +11,7 @@ void main() {
     ),
   );
 }
+
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -21,6 +20,7 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
 class MapSample extends StatefulWidget {
   @override
   State<MapSample> createState() => MapSampleState();
@@ -41,7 +41,7 @@ class MapSampleState extends State<MapSample> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Autocomplete<String>(
                   optionsBuilder: (TextEditingValue textEditing) {
                     if (textEditing.text == '') {
@@ -52,8 +52,15 @@ class MapSampleState extends State<MapSample> {
                     });
                   },
                   onSelected: (String selectedItem) {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WordDetailPage(word :selectedItem)));
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                WordDetailPage(word: selectedItem)));
                   },
+                ),
+                SizedBox(
+                  height: 100,
                 ),
               ],
             ),
@@ -63,4 +70,3 @@ class MapSampleState extends State<MapSample> {
     );
   }
 }
-
