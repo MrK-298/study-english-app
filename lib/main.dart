@@ -28,6 +28,7 @@ class MapSample extends StatefulWidget {
 
 class MapSampleState extends State<MapSample> {
   final DictReducedSA dict = DictReducedSA();
+  
 
   @override
   Widget build(BuildContext context) {

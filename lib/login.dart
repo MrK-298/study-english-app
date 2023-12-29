@@ -1,18 +1,14 @@
+import 'package:english/WordDetail.dart';
 import 'package:english/main.dart';
 import 'package:flutter/material.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: LoginPage(),
-    );
-  }
-}
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:english/data/token.dart';
 
 class LoginPage extends StatefulWidget {
+  final String word;
+
+  LoginPage({required this.word});
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -160,8 +156,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void onSignInClickecd() {
     setState(() {
-      if (_userController.text.length < 6 ||
-          !_userController.text.contains("@")) {
+      if (_userController.text.length < 6) {
         _userInvalid = true;
       } else {
         _userInvalid = false;
@@ -172,12 +167,36 @@ class _LoginPageState extends State<LoginPage> {
         _passInvalid = false;
       }
       if (!_userInvalid && !_passInvalid) {
-        Navigator.push(context, MaterialPageRoute(builder: gotoHome));
+        login();
       }
     });
   }
+  Future<void> login() async {
+    final Map<String, dynamic> data = {
+      'userName': _userController.text,
+      'passWord': _passController.text,
+    };
 
-  Widget gotoHome(BuildContext context) {
-    return MapSample();
+    final response = await http.post(
+      Uri.parse('https://10.0.2.2:7142/api/Auth/Login'),
+      body: jsonEncode(data), // Chuyển đổi dữ liệu thành JSON
+      headers: {
+        'Content-Type':
+            'application/json', // Đặt header Content-Type thành application/json
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // Xử lý đăng nhập thành công
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      if (responseData['token'] != null) {
+        TokenManager.setToken(responseData['token']);
+         Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => WordDetailPage(word: widget.word)));             
+      } else {
+        debugPrint("Error: ${response.statusCode}");
+        debugPrint("Response body: ${response.body}");
+      }
+    }
   }
 }
