@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class EditProfilePage extends StatefulWidget {
   final int userId;
   EditProfilePage({required this.userId});
@@ -25,7 +24,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController nameController = new TextEditingController();
   String email = "";
   String userName = "";
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   Future<void> changeProfile() async {
     // Kiểm tra nếu chuyến đi đã được chấp nhận rồi
 
@@ -171,41 +170,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
               height: 50,
             ),
             Form(
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: nameController,
-                      decoration: InputDecoration(
-                        hintText: ('$userName'), prefixIcon: Icon(Icons.person_outline_rounded)
-                      ),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                        hintText: ('$userName'),
+                        prefixIcon: Icon(Icons.person_outline_rounded)),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                        hintText: ('$email'),
+                        prefixIcon: Icon(Icons.email_outlined)),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  SizedBox(
+                    width: 200,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        changeProfile();
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          side: BorderSide.none,
+                          shape: StadiumBorder()),
+                      child: Text("Lưu hồ sơ",
+                          style: TextStyle(color: Colors.white)),
                     ),
-                    SizedBox(height: 20,),
-                    TextFormField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                          hintText: ('$email'), prefixIcon: Icon(Icons.email_outlined)
-                      ),
-                    ),                
-                    SizedBox(height: 50,),
-                    SizedBox(
-                      width: 200,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed:() async{
-                           changeProfile();
-                          },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue, side: BorderSide.none, shape: StadiumBorder()),
-                        child: Text("Lưu hồ sơ", style: TextStyle(color: Colors.white)),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-       bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         fixedColor: Colors.black,
         type: BottomNavigationBarType.fixed,
         iconSize: 30,
@@ -215,7 +221,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             label: 'Trang chủ',
             backgroundColor: Colors.pink,
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.menu_book),
             label: 'Danh sách từ',
             backgroundColor: Colors.pink,
@@ -240,11 +246,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 MaterialPageRoute(builder: (context) => ListWordPage()));
           }
           if (index == 2) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage()));
           }
         },
-        ),
+      ),
     );
   }
 }

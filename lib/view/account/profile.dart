@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String userName = "";
   String email = "";
   int userId = 0;
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   @override
   void initState() {
     super.initState();
@@ -32,38 +32,41 @@ class _ProfilePageState extends State<ProfilePage> {
       },
     );
 
-  if (response.statusCode == 200) {
-     return showDialog<void>(
-     context: context,
-     builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Xác nhận đăng xuất'),
-        content: Text('Bạn có chắc chắn muốn đăng xuất không?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Quay lại', style: TextStyle(color: Colors.red)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Đóng hộp thoại
-            },
-          ),
-          TextButton(
-            child: Text('OK', style: TextStyle(color: Colors.green)),
-            onPressed: () {
-              Navigator.of(context).pop(); // Đóng hộp thoại
-              // Chuyển hướng đến trang đăng nhập
-               Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(word:"fake")));
-            },
-          ),
-        ],
+    if (response.statusCode == 200) {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Xác nhận đăng xuất'),
+            content: Text('Bạn có chắc chắn muốn đăng xuất không?'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Quay lại', style: TextStyle(color: Colors.red)),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Đóng hộp thoại
+                },
+              ),
+              TextButton(
+                child: Text('OK', style: TextStyle(color: Colors.green)),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Đóng hộp thoại
+                  // Chuyển hướng đến trang đăng nhập
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage(word: "fake")));
+                },
+              ),
+            ],
+          );
+        },
       );
-    },
-  );
-    
-  } else {
-     debugPrint("Error: ${response.statusCode}");
-     debugPrint("Response body: ${response.body}");
+    } else {
+      debugPrint("Error: ${response.statusCode}");
+      debugPrint("Response body: ${response.body}");
+    }
   }
-  }
+
   Future<void> decodetoken(String Token) async {
     final response = await http.post(
       Uri.parse('https://10.0.2.2:7142/api/Auth/DecodeToken?token=$Token'),
@@ -98,7 +101,6 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Padding(
           padding: const EdgeInsets.all(60.0),
           child: Text('Hồ sơ tài khoản'),
-
         ),
       ),
       backgroundColor: Colors.white,
@@ -160,8 +162,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                     )));
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue, side: BorderSide.none, shape: StadiumBorder()),
-                      child: Text("Chỉnh sửa hồ sơ", style: TextStyle(color: Colors.white)),
+                          backgroundColor: Colors.blue,
+                          side: BorderSide.none,
+                          shape: StadiumBorder()),
+                      child: Text("Chỉnh sửa hồ sơ",
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -190,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.black,
                           ),
                           title: Text('$email')),
-                    ),                  
+                    ),
                     Card(
                       elevation: 4,
                       child: ListTile(
@@ -227,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-       bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         fixedColor: Colors.black,
         type: BottomNavigationBarType.fixed,
         iconSize: 30,
@@ -237,7 +242,7 @@ class _ProfilePageState extends State<ProfilePage> {
             label: 'Trang chủ',
             backgroundColor: Colors.pink,
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.menu_book),
             label: 'Danh sách từ',
             backgroundColor: Colors.pink,
@@ -262,11 +267,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 MaterialPageRoute(builder: (context) => ListWordPage()));
           }
           if (index == 2) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProfilePage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage()));
           }
         },
-        ),
+      ),
     );
   }
 }
