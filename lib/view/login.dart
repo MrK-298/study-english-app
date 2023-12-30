@@ -1,5 +1,5 @@
-import 'package:english/WordDetail.dart';
-import 'package:english/main.dart';
+import 'package:english/view/WordDetail.dart';
+import 'package:english/view/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

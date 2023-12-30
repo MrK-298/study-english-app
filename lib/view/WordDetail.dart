@@ -2,7 +2,8 @@ import 'package:dictionaryx/dictionary_reduced_msa.dart';
 import 'package:english/data/partofspeechdata.dart';
 import 'package:english/data/token.dart';
 import 'package:english/data/word.dart';
-import 'package:english/login.dart';
+import 'package:english/view/listword.dart';
+import 'package:english/view/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -20,7 +21,7 @@ class WordDetailPage extends StatefulWidget {
 class _WordDetailState extends State<WordDetailPage>{
   var entry;
   String word = "";
-  String pronunciation = "";
+  String pronunciationword = "";
   List<String> pronunciations = [];
   List<PartOfSpeechData> partsOfSpeech = [];
   List<String> definitions = [];
@@ -34,6 +35,7 @@ class _WordDetailState extends State<WordDetailPage>{
   int wordid = 0;
   String out = "";
   bool isWordSaved = false;
+  int _currentIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -92,6 +94,7 @@ class _WordDetailState extends State<WordDetailPage>{
         'word': word,
         'definition': out,
         'userId': userid, 
+        'phonetic': pronunciationword,
       };
     final response = await http.post(
       Uri.parse('https://10.0.2.2:7142/api/ManagerWord/SaveWord'),
@@ -232,6 +235,7 @@ class _WordDetailState extends State<WordDetailPage>{
       List<dynamic> data = json.decode(response.body);
       setState(()  {
         word = data[0]['word'];       
+        pronunciationword = data[0]['phonetic'].toString();
         translateword(word);
         getAllWords();
         pronunciations.add(data[0]['phonetic'].toString());
@@ -400,6 +404,38 @@ class _WordDetailState extends State<WordDetailPage>{
               ],
             ),
           )),
+        bottomNavigationBar: BottomNavigationBar(
+        fixedColor: Colors.black,
+        type: BottomNavigationBarType.fixed,
+        iconSize: 30,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer),
+            label: 'Home',
+            backgroundColor: Colors.pink,
+          ),
+           BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer),
+            label: 'Thống kê',
+            backgroundColor: Colors.pink,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Tài Khoản',
+            backgroundColor: Colors.cyanAccent,
+          ),
+        ],
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ListWordPage()));
+          }
+        }
+        ),
     );
   }
 }

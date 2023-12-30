@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:english/WordDetail.dart';
+import 'package:english/view/WordDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:english/sdk/DictReduceSA.dart';
 
