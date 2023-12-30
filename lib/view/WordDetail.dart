@@ -18,7 +18,7 @@ class WordDetailPage extends StatefulWidget {
   _WordDetailState createState() => _WordDetailState();
 }
 
-class _WordDetailState extends State<WordDetailPage>{
+class _WordDetailState extends State<WordDetailPage> {
   var entry;
   String word = "";
   String pronunciationword = "";
@@ -46,25 +46,29 @@ class _WordDetailState extends State<WordDetailPage>{
     resetstatus();
     getWordDetails();
   }
+
   @override
   void dispose() {
     wordSavedController.close();
     super.dispose();
   }
+
   //Chức năng đọc từ vựng
-   speak(String text) async {
+  speak(String text) async {
     await _flutterTts.setLanguage("en-US");
     await _flutterTts.setPitch(0.8);
     await _flutterTts.speak(text);
   }
+
   //Chức năng thông báo
-   Future<void> showNotification(String message) async {
+  Future<void> showNotification(String message) async {
     wordSavedController.add(message);
     await Future.delayed(Duration(seconds: 3));
     wordSavedController.add(""); // Đóng thông báo sau 3 giây
   }
+
   //Chức năng giải mã
-   Future<void> decodetoken(String Token) async {
+  Future<void> decodetoken(String Token) async {
     final response = await http.post(
       Uri.parse('https://10.0.2.2:7142/api/Auth/DecodeToken?token=$Token'),
       headers: {
@@ -82,43 +86,39 @@ class _WordDetailState extends State<WordDetailPage>{
       debugPrint("Response body: ${response.body}");
     }
   }
+
   //Lưu từ
-  Future<void> saveword() async{
-    if(TokenManager.getToken()!="")
-    {
-        if (userid == 0) {
-          print('Token không hợp lệ hoặc không có thông tin user');
-          return;
-        }
-        final Map<String, dynamic> data = {
+  Future<void> saveword() async {
+    if (TokenManager.getToken() != "") {
+      if (userid == 0) {
+        print('Token không hợp lệ hoặc không có thông tin user');
+        return;
+      }
+      final Map<String, dynamic> data = {
         'word': word,
         'definition': out,
         'userId': userid, 
         'phonetic': pronunciationword,
       };
-    final response = await http.post(
-      Uri.parse('https://10.0.2.2:7142/api/ManagerWord/SaveWord'),
-      body: jsonEncode(data), 
-      headers: {
-        'Content-Type':
-            'application/json', 
-      },
-    );
-    if (response.statusCode == 200){
-      Map<String, dynamic> data = json.decode(response.body);       
+      final response = await http.post(
+        Uri.parse('https://10.0.2.2:7142/api/ManagerWord/SaveWord'),
+        body: jsonEncode(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
         showNotification("Từ đã được lưu thành công");
         setState(() {
-           wordid = data['id'];
-           isWordSaved = true;
+          wordid = data['id'];
+          isWordSaved = true;
         });
-    }
-    else {
-      debugPrint("Error: ${response.statusCode}");
-      debugPrint("Response body: ${response.body}");
-    }
-    }
-    else
-    {
+      } else {
+        debugPrint("Error: ${response.statusCode}");
+        debugPrint("Response body: ${response.body}");
+      }
+    } else {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -136,8 +136,12 @@ class _WordDetailState extends State<WordDetailPage>{
                 child: Text('Có', style: TextStyle(color: Colors.green)),
                 onPressed: () {
                   Navigator.of(context).pop(); // Đóng hộp thoại
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage(word: widget.word,)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage(
+                                word: widget.word,
+                              )));
                 },
               ),
             ],
@@ -146,29 +150,31 @@ class _WordDetailState extends State<WordDetailPage>{
       );
     }
   }
+
   //Bỏ lưu từ
-  Future<void> unsaveword() async{
-     final response = await http.delete(
+  Future<void> unsaveword() async {
+    final response = await http.delete(
       Uri.parse('https://10.0.2.2:7142/api/ManagerWord/UnSaveWord?id=$wordid'),
       headers: {
         'Content-Type': 'application/json',
       },
     );
-     if (response.statusCode == 200){
-        showNotification("Đã xóa từ khỏi danh sách đã lưu");
-        setState(() {
-           isWordSaved = false;
-        });
-    }
-    else {
+    if (response.statusCode == 200) {
+      showNotification("Đã xóa từ khỏi danh sách đã lưu");
+      setState(() {
+        isWordSaved = false;
+      });
+    } else {
       debugPrint("Error: ${response.statusCode}");
       debugPrint("Response body: ${response.body}");
     }
   }
+
   //Translate chuỗi
   Future<String> translatetext(String text) async {
     final response = await http.get(
-      Uri.parse('https://api.mymemory.translated.net/get?q=$text&langpair=en|vi'),
+      Uri.parse(
+          'https://api.mymemory.translated.net/get?q=$text&langpair=en|vi'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -181,6 +187,7 @@ class _WordDetailState extends State<WordDetailPage>{
     }
     return '';
   }
+
   //Translate từ
   void translateword(String Word) async {
     String translatedText = await translatetext(Word);
@@ -188,6 +195,7 @@ class _WordDetailState extends State<WordDetailPage>{
       out = translatedText;
     });
   }
+
   //Lấy danh sách từ
   Future<void> getAllWords() async {
     final response = await http.get(
@@ -198,29 +206,30 @@ class _WordDetailState extends State<WordDetailPage>{
     );
 
     if (response.statusCode == 200) {
-       final List<dynamic> wordData = json.decode(response.body);
-        List<Word> words = [];
-        words = wordData.map((data) => Word.fromJson(data)).toList();
-          for (var wordsave in words){
+      final List<dynamic> wordData = json.decode(response.body);
+      List<Word> words = [];
+      words = wordData.map((data) => Word.fromJson(data)).toList();
+      for (var wordsave in words) {
         if (wordsave.word == widget.word && wordsave.userId == userid) {
-            setState(() {
-              wordid = wordsave.id;
-              isWordSaved = true;
-            });
-          }
+          setState(() {
+            wordid = wordsave.id;
+            isWordSaved = true;
+          });
         }
-      } else {
-        print("Error: ${response.statusCode}");
-        print(response.body);
       }
+    } else {
+      print("Error: ${response.statusCode}");
+      print(response.body);
     }
+  }
+
   //danh sách từ đã lưu
-  void resetstatus() async{
-    if(TokenManager.getToken()!="")
-    {
+  void resetstatus() async {
+    if (TokenManager.getToken() != "") {
       final out2 = await decodetoken(TokenManager.getToken());
     }
   }
+
   //Lấy chi tiết từ
   Future<void> getWordDetails() async {
     final response = await http.get(
@@ -289,25 +298,32 @@ class _WordDetailState extends State<WordDetailPage>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
+        elevation: 4, // Độ đổ bóng của AppBar
         leading: IconButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
-          title: Row(
+        title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [ 
+          children: [
             SizedBox(width: 0),
-            Text('$word'),
-            
+            Text(
+              '$word',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
             IconButton(
               icon: Icon(
                 isWordSaved ? Icons.star : Icons.star_border,
                 color: Colors.yellow,
               ),
-              onPressed: () {              
-                if (isWordSaved==false) {
+              onPressed: () {
+                if (isWordSaved == false) {
                   saveword();
                 } else {
                   unsaveword();
@@ -315,6 +331,10 @@ class _WordDetailState extends State<WordDetailPage>{
               },
             ),
           ],
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(10)), // Điều chỉnh độ cong của mép dưới
         ),
       ),
       body: Container(
@@ -324,8 +344,11 @@ class _WordDetailState extends State<WordDetailPage>{
           child: SingleChildScrollView(
             child: Column(
               children: [
-                ListTile(
-                    title: Text('$word\t:\t$out', style: TextStyle(fontSize: 20)),
+                Card(
+                  elevation: 10,
+                  child: ListTile(
+                    title:
+                        Text('$word\t:\t$out', style: TextStyle(fontSize: 20)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: pronunciations
@@ -339,13 +362,18 @@ class _WordDetailState extends State<WordDetailPage>{
                       },
                     ),
                   ),
+                ),
                 for (var partOfSpeechData in partsOfSpeech)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [                      
-                      ListTile(
-                        title: Text('Loại từ: ${partOfSpeechData.partOfSpeech}',
-                            style: TextStyle(fontSize: 20)),
+                    children: [
+                      Card(
+                        elevation: 10,
+                        child: ListTile(
+                          title: Text(
+                              'Loại từ: ${partOfSpeechData.partOfSpeech}',
+                              style: TextStyle(fontSize: 20)),
+                        ),
                       ),
                       for (var definitionData in partOfSpeechData.definitions)
                         ListTile(
@@ -356,14 +384,25 @@ class _WordDetailState extends State<WordDetailPage>{
                                 FutureBuilder<String>(
                                   future:
                                       translatetext(definitionData.definition),
-                                      builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
                                         ConnectionState.done) {
                                       // Hiển thị Text khi Future hoàn thành
-                                      return Text(
-                                        'Định nghĩa: ${definitionData.definition}\n(${snapshot.data})',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.black),
+                                      return Card(
+                                        elevation: 10,
+                                        child: ListTile(
+                                            title: Text(
+                                              'Định nghĩa: ${definitionData.definition})',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black),
+                                            ),
+                                            subtitle: Text(
+                                              ' (${snapshot.data})',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.purple),
+                                            )),
                                       );
                                     } else {
                                       // Hiển thị một Widget khác trong quá trình loading
@@ -372,35 +411,50 @@ class _WordDetailState extends State<WordDetailPage>{
                                   },
                                 ),
                               if (definitionData.synonyms.isNotEmpty)
-                                Text(
-                                    '\nTừ đồng nghĩa: ${definitionData.synonyms.join('\t,')}',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black)),
+                                Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    title: Text(
+                                        '\nTừ đồng nghĩa: ${definitionData.synonyms.join('\t,')}',
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.black)),
+                                  ),
+                                ),
                               if (definitionData.antonyms.isNotEmpty)
-                                Text(
-                                    '\nTừ trái nghĩa: ${definitionData.antonyms.join('\t,')}',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black)),
+                                Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    title: Text(
+                                        '\nTừ trái nghĩa: ${definitionData.antonyms.join('\t,')}',
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.black)),
+                                  ),
+                                ),
                               if (definitionData.example.isNotEmpty)
-                                Text('\nVí dụ: ${definitionData.example}',
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black)),
+                                Card(
+                                  child: ListTile(
+                                    title: Text(
+                                        '\nVí dụ: ${definitionData.example}',
+                                        style: TextStyle(
+                                            fontSize: 15, color: Colors.black)),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
                     ],
                   ),
-                  StreamBuilder<String>(
-                    stream: wordSavedController.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        // Hiển thị thông báo
-                        return Text(snapshot.data!);
-                      } else {
-                        return Container();
-                      }
-                    },
-                  ),
+                StreamBuilder<String>(
+                  stream: wordSavedController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      // Hiển thị thông báo
+                      return Text(snapshot.data!);
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
               ],
             ),
           )),
