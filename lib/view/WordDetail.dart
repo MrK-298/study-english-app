@@ -2,8 +2,10 @@ import 'package:dictionaryx/dictionary_reduced_msa.dart';
 import 'package:english/data/partofspeechdata.dart';
 import 'package:english/data/token.dart';
 import 'package:english/data/word.dart';
+import 'package:english/view/account/profile.dart';
 import 'package:english/view/listword.dart';
-import 'package:english/view/login.dart';
+import 'package:english/view/account/login.dart';
+import 'package:english/view/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -36,6 +38,7 @@ class _WordDetailState extends State<WordDetailPage> {
   String out = "";
   bool isWordSaved = false;
   int _currentIndex = 0;
+  bool shouldShowButton = false;
   @override
   void initState() {
     super.initState();
@@ -80,6 +83,7 @@ class _WordDetailState extends State<WordDetailPage> {
       final Map<String, dynamic> responseData = json.decode(response.body);
       setState(() {
         userid = int.parse(responseData['userId']);
+        shouldShowButton = true;
       });
     } else {
       debugPrint("Error: ${response.statusCode}");
@@ -457,20 +461,21 @@ class _WordDetailState extends State<WordDetailPage> {
                 ),
               ],
             ),
-          )),
-        bottomNavigationBar: BottomNavigationBar(
+          )),     
+     bottomNavigationBar: shouldShowButton
+      ? BottomNavigationBar(
         fixedColor: Colors.black,
         type: BottomNavigationBarType.fixed,
         iconSize: 30,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer),
-            label: 'Home',
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
             backgroundColor: Colors.pink,
           ),
-           BottomNavigationBarItem(
-            icon: Icon(Icons.local_offer),
-            label: 'Thống kê',
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: 'Danh sách từ',
             backgroundColor: Colors.pink,
           ),
           BottomNavigationBarItem(
@@ -486,10 +491,19 @@ class _WordDetailState extends State<WordDetailPage> {
           });
           if (index == 0) {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ListWordPage()));
+                context, MaterialPageRoute(builder: (context) => MapSample()));
           }
-        }
-        ),
+          if (index == 1) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ListWordPage()));
+          }
+          if (index == 2) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => ProfilePage()));
+          }
+        },
+      )
+    : null,
     );
   }
 }

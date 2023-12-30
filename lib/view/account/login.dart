@@ -1,9 +1,12 @@
 import 'package:english/view/WordDetail.dart';
+import 'package:english/view/account/forgotpassword.dart';
+import 'package:english/view/account/register.dart';
 import 'package:english/view/main.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:english/data/token.dart';
+import 'package:flutter/gestures.dart';
 
 class LoginPage extends StatefulWidget {
   final String word;
@@ -72,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(fontSize: 18, color: Colors.black),
                         controller: _userController,
                         decoration: InputDecoration(
-                            labelText: "Username",
+                            labelText: "Tài khoản",
                             errorText: _userInvalid ? _userNameErr : null,
                             labelStyle: TextStyle(
                                 color: Color(0xff888888), fontSize: 15))),
@@ -87,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passController,
                             obscureText: !_showPass,
                             decoration: InputDecoration(
-                                labelText: "Password",
+                                labelText: "Mật khẩu",
                                 errorText: _passInvalid ? _passErr : null,
                                 labelStyle: TextStyle(
                                     color: Color(0xff888888), fontSize: 15))),
@@ -104,6 +107,22 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
+                    GestureDetector(
+                    onTap: () {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ForgotPasswordPage(word: widget.word,)),
+                    );
+                    },
+                    child: Container(
+                    constraints: BoxConstraints.loose(Size(double.infinity, 30)),
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Text(
+                    'Quên mật khẩu?',
+                    style: TextStyle(fontSize: 16, color: Color(0xff3277D8)),
+                    ),
+                    ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
@@ -112,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: ElevatedButton(
                         onPressed: onSignInClickecd,
                         child: Text(
-                          "SIGN IN",
+                          "ĐĂNG NHẬP",
                           style: TextStyle(color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -124,29 +143,33 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    height: 130,
-                    width: double.infinity,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            "NEW USER? SIGN UP",
-                            style: TextStyle(
-                                fontSize: 15, color: Color(0xff888888)),
-                          ),
-                          Text(
-                            "FORGOT PASSWORD",
-                            style: TextStyle(fontSize: 15, color: Colors.blue),
-                          )
-                        ]),
+                   Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+                    child: RichText(
+                    text: TextSpan(
+                        text: 'Bạn là người mới? ',
+                        style: TextStyle(color: Color(0xff606470), fontSize: 16),
+                        children: <TextSpan>[
+                          TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(word:widget.word)));
+                                },
+                              text: 'Đăng ký tài khoản mới',
+                              style: TextStyle(
+                                  color: Color(0xff3277D8), fontSize: 16
+                                  )
+                              )
+                            ]
+                        )
+                    ),
                   )
-                ],
-              ),
-            )),
-      ),
-    );
-  }
+                    ],
+                  ),
+                )),
+          ),
+        );
+      }
 
   void onToggleSHowPass() {
     setState(() {
@@ -191,8 +214,16 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData['token'] != null) {
         TokenManager.setToken(responseData['token']);
-         Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => WordDetailPage(word: widget.word)));             
+        if(widget.word!="fake")
+        {
+        Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => WordDetailPage(word: widget.word))); 
+        }
+        else
+        {
+          Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MapSample()));
+        }           
       } else {
         debugPrint("Error: ${response.statusCode}");
         debugPrint("Response body: ${response.body}");
