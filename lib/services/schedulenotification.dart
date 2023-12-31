@@ -66,8 +66,8 @@ class NotificationService {
     now.year,
     now.month,
     now.day,
-    11, //giờ
-    10, //phút
+    13, //giờ
+    07, //phút
   );
   // Nếu thời điểm lên lịch đã qua, thì lên lịch cho ngày tiếp theo
   return scheduledDate.isBefore(now) ? scheduledDate.add(const Duration(days: 1)) : scheduledDate;

@@ -219,9 +219,11 @@ class _WordDetailState extends State<WordDetailPage> {
       List<Word> words = [];
       words = wordData.map((data) => Word.fromJson(data)).toList();
       for (var wordsave in words) {
+        setState(() {
+          randomword.add(wordsave.word);
+        });
         if (wordsave.word == widget.word && wordsave.userId == userid) {
           setState(() {
-            randomword.add(wordsave.word);
             wordid = wordsave.id;
             isWordSaved = true;
           });
