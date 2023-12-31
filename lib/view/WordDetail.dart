@@ -14,6 +14,7 @@ import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'dart:math';
+
 class WordDetailPage extends StatefulWidget {
   final String word;
 
@@ -241,22 +242,25 @@ class _WordDetailState extends State<WordDetailPage> {
       final out2 = await decodetoken(TokenManager.getToken());
     }
   }
+
   //
-  void waitrandom() async{
+  void waitrandom() async {
     final out3 = await getAllWords();
-    if(TokenManager.getToken()!="")
-    {
+    if (TokenManager.getToken() != "") {
       String random = getRandomWord(randomword);
       String translateword = await translatetext(random);
       NotificationService notificationService = NotificationService();
-      notificationService.scheduleNotification(title: random, body: translateword);
+      notificationService.scheduleNotification(
+          title: random, body: translateword);
     }
   }
+
   //random từ
   String getRandomWord(List<String> wordList) {
     int randomIndex = Random().nextInt(wordList.length);
     return wordList[randomIndex];
   }
+
   //Lấy chi tiết từ
   Future<void> getWordDetails() async {
     final response = await http.get(

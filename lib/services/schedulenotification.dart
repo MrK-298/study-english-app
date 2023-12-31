@@ -4,6 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
+
 class NotificationService {
   final FlutterLocalNotificationsPlugin notificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -19,16 +20,21 @@ class NotificationService {
       onSelectNotification: onSelectNotification,
     );
   }
-   Future<void> onSelectNotification(String? payload) async {
-     if (appContext != null) {
-      Navigator.push(appContext!, MaterialPageRoute(builder: (context) => WordDetailPage(word: payload.toString())));
+
+  Future<void> onSelectNotification(String? payload) async {
+    if (appContext != null) {
+      Navigator.push(
+          appContext!,
+          MaterialPageRoute(
+              builder: (context) => WordDetailPage(word: payload.toString())));
     }
   }
+
   notificationDetails() {
     return const NotificationDetails(
-        android: AndroidNotificationDetails('1', 'HeartSteel',
-            importance: Importance.max),
-            );
+      android: AndroidNotificationDetails('1', 'HeartSteel',
+          importance: Importance.max),
+    );
   }
 
   Future showNotification(
@@ -37,39 +43,41 @@ class NotificationService {
         id, title, body, await notificationDetails());
   }
 
-  Future scheduleNotification(
-      {int id = 0,
-      String? title,
-      String? body,
-      }) async {
-      return notificationsPlugin.zonedSchedule(
-        id,
-        title,
-        body,
-        tz.TZDateTime.from(
-          _nextInstanceOfSpecificTime(),
-          tz.local,
-        ),
-        await notificationDetails(),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        payload: title,
-        );
-            
+  Future scheduleNotification({
+    int id = 0,
+    String? title,
+    String? body,
+  }) async {
+    return notificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(
+        _nextInstanceOfSpecificTime(),
+        tz.local,
+      ),
+      await notificationDetails(),
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: title,
+    );
   }
+
   TZDateTime _nextInstanceOfSpecificTime() {
-  final String timezoneIdentifier = 'Asia/Ho_Chi_Minh';
-  final now = TZDateTime.now(getLocation(timezoneIdentifier));
-  final scheduledDate = TZDateTime(
-    getLocation(timezoneIdentifier),
-    now.year,
-    now.month,
-    now.day,
-    13, //giờ
-    07, //phút
-  );
-  // Nếu thời điểm lên lịch đã qua, thì lên lịch cho ngày tiếp theo
-  return scheduledDate.isBefore(now) ? scheduledDate.add(const Duration(days: 1)) : scheduledDate;
-}
+    final String timezoneIdentifier = 'Asia/Ho_Chi_Minh';
+    final now = TZDateTime.now(getLocation(timezoneIdentifier));
+    final scheduledDate = TZDateTime(
+      getLocation(timezoneIdentifier),
+      now.year,
+      now.month,
+      now.day,
+      13, //giờ
+      24, //phút
+    );
+    // Nếu thời điểm lên lịch đã qua, thì lên lịch cho ngày tiếp theo
+    return scheduledDate.isBefore(now)
+        ? scheduledDate.add(const Duration(days: 1))
+        : scheduledDate;
+  }
 }

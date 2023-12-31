@@ -47,9 +47,35 @@ class MapSampleState extends State<MapSample> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Stydy English'),
+          backgroundColor: Colors.blue,
+          elevation: 0,
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/image/logo.png', // Đường dẫn của ảnh
+                height: 28, // Chiều cao của ảnh
+                width: 28, // Chiều rộng của ảnh
+              ),
+              SizedBox(width: 80), // Khoảng trắng giữa ảnh và tiêu đề
+              Text(
+                'Study English',
+                style: TextStyle(
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(width: 80), // Khoảng trắng giữa tiêu đề và icon
+              Icon(
+                Icons.facebook, // Thay đổi biểu tượng theo ý muốn
+                color: Colors.white,
+              ),
+            ],
+          ),
         ),
-       body: SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -81,6 +107,96 @@ class MapSampleState extends State<MapSample> {
                     },
                   ),
                 ),
+                //-------------
+                SizedBox(height: 10),
+                Column(
+                  children: [
+                    Text(
+                      'Trắc nghiệm',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.timer),
+                    title: Text('Exam 1'),
+                    subtitle: Text('Ngữ pháp'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.create),
+                      onPressed: () {
+                        // Xử lý khi nút được nhấn
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Card(
+                  child: ListTile(
+                    leading: Icon(Icons.timer),
+                    title: Text('Exam 2'),
+                    subtitle: Text('Mệnh đề quan hệ'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.create),
+                      onPressed: () {
+                        // Xử lý khi nút được nhấn
+                      },
+                    ),
+                  ),
+                ),
+                Card(
+                  child: ListTile(
+                    title: Text('Exam 3'),
+                    subtitle: Text('Câu bị động'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.create),
+                      onPressed: () {
+                        // Xử lý khi nút được nhấn
+                      },
+                    ),
+                    leading: PopupMenuButton<String>(
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'option1',
+                          child: Row(
+                            children: [
+                              Icon(Icons.timer),
+                              SizedBox(width: 8),
+                              Text('10 phút'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'option2',
+                          child: Row(
+                            children: [
+                              Icon(Icons.timer),
+                              SizedBox(width: 8),
+                              Text('20 phút'),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'option3',
+                          child: Row(
+                            children: [
+                              Icon(Icons.timer),
+                              SizedBox(width: 8),
+                              Text('30 phút'),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onSelected: (String value) {
+                        // Xử lý khi lựa chọn được thực hiện
+                        print('Selected: $value');
+                      },
+                    ),
+                  ),
+                ),
+
+                //----------
               ],
             ),
           ),
