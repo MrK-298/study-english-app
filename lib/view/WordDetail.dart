@@ -106,7 +106,7 @@ class _WordDetailState extends State<WordDetailPage> {
       final Map<String, dynamic> data = {
         'word': word,
         'definition': out,
-        'userId': userid, 
+        'userId': userid,
         'phonetic': pronunciationword,
       };
       final response = await http.post(
@@ -267,8 +267,8 @@ class _WordDetailState extends State<WordDetailPage> {
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      setState(()  {
-        word = data[0]['word'];       
+      setState(() {
+        word = data[0]['word'];
         pronunciationword = data[0]['phonetic'].toString();
         translateword(word);
         waitrandom();
@@ -382,6 +382,7 @@ class _WordDetailState extends State<WordDetailPage> {
                     ),
                     trailing: IconButton(
                       icon: Icon(Icons.volume_up),
+                      color: Colors.blueAccent,
                       onPressed: () {
                         speak(word);
                       },
@@ -396,7 +397,7 @@ class _WordDetailState extends State<WordDetailPage> {
                         elevation: 10,
                         child: ListTile(
                           title: Text(
-                              'Loại từ: ${partOfSpeechData.partOfSpeech}',
+                              'Loại từ: ${partOfSpeechData.partOfSpeech} ',
                               style: TextStyle(fontSize: 20)),
                         ),
                       ),
@@ -426,7 +427,7 @@ class _WordDetailState extends State<WordDetailPage> {
                                               ' (${snapshot.data})',
                                               style: TextStyle(
                                                   fontSize: 15,
-                                                  color: Colors.purple),
+                                                  color: Colors.purpleAccent),
                                             )),
                                       );
                                     } else {
@@ -482,49 +483,49 @@ class _WordDetailState extends State<WordDetailPage> {
                 ),
               ],
             ),
-          )),     
-     bottomNavigationBar: shouldShowButton
-      ? BottomNavigationBar(
-        fixedColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        iconSize: 30,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Trang chủ',
-            backgroundColor: Colors.pink,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book),
-            label: 'Danh sách từ',
-            backgroundColor: Colors.pink,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Tài Khoản',
-            backgroundColor: Colors.cyanAccent,
-          ),
-        ],
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          if (index == 0) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => MapSample()));
-          }
-          if (index == 1) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ListWordPage()));
-          }
-          if (index == 2) {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProfilePage()));
-          }
-        },
-      )
-    : null,
+          )),
+      bottomNavigationBar: shouldShowButton
+          ? BottomNavigationBar(
+              fixedColor: Colors.black,
+              type: BottomNavigationBarType.fixed,
+              iconSize: 30,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: 'Trang chủ',
+                  backgroundColor: Colors.pink,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.menu_book),
+                  label: 'Danh sách từ',
+                  backgroundColor: Colors.pink,
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle),
+                  label: 'Tài Khoản',
+                  backgroundColor: Colors.cyanAccent,
+                ),
+              ],
+              currentIndex: _currentIndex,
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+                if (index == 0) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MapSample()));
+                }
+                if (index == 1) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ListWordPage()));
+                }
+                if (index == 2) {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()));
+                }
+              },
+            )
+          : null,
     );
   }
 }

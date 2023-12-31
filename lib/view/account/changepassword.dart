@@ -52,8 +52,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 child: Text('Có', style: TextStyle(color: Colors.green)),
                 onPressed: () {
                   Navigator.of(context).pop(); // Đóng hộp thoại
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage(word:"fake")));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage(word: "fake")));
                 },
               ),
             ],

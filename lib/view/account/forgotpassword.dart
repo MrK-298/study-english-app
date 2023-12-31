@@ -72,8 +72,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   // Đóng dialog
                   Navigator.of(context).pop();
                   // Chuyển về trang đăng nhập
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage(word:widget.word)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage(word: widget.word)));
                 },
                 child: Text('Đóng'),
               ),
@@ -191,6 +193,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   height: 52,
                   child: ElevatedButton(
                     onPressed: sentCode,
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     child: Text(
                       'Gửi mã',
                       style: TextStyle(fontSize: 18, color: Colors.white),
@@ -206,6 +209,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: resetPassword,
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     child: Text(
                       'Reset',
                       style: TextStyle(fontSize: 18, color: Colors.white),

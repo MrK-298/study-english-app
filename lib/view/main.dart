@@ -37,10 +37,11 @@ class MapSampleState extends State<MapSample> {
   @override
   void initState() {
     super.initState();
-    if(TokenManager.getToken()!=""){
+    if (TokenManager.getToken() != "") {
       shouldShowButton = true;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -85,47 +86,49 @@ class MapSampleState extends State<MapSample> {
           ),
         ),
         bottomNavigationBar: shouldShowButton
-        ? BottomNavigationBar(
-          fixedColor: Colors.black,
-          type: BottomNavigationBarType.fixed,
-          iconSize: 30,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Trang chủ',
-              backgroundColor: Colors.pink,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book),
-              label: 'Danh sách từ',
-              backgroundColor: Colors.pink,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: 'Tài Khoản',
-              backgroundColor: Colors.cyanAccent,
-            ),
-          ],
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-            if (index == 0) {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => MapSample()));
-            }
-            if (index == 1) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ListWordPage()));
-            }
-            if (index == 2) {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => ProfilePage()));
-            }
-          },
-        )
-      : null,
+            ? BottomNavigationBar(
+                fixedColor: Colors.black,
+                type: BottomNavigationBarType.fixed,
+                iconSize: 30,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Trang chủ',
+                    backgroundColor: Colors.pink,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.menu_book),
+                    label: 'Danh sách từ',
+                    backgroundColor: Colors.pink,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.account_circle),
+                    label: 'Tài Khoản',
+                    backgroundColor: Colors.cyanAccent,
+                  ),
+                ],
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                  if (index == 0) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MapSample()));
+                  }
+                  if (index == 1) {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListWordPage()));
+                  }
+                  if (index == 2) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()));
+                  }
+                },
+              )
+            : null,
       ),
     );
   }

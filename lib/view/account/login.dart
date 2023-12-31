@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(height: 100),
+                  SizedBox(height: 80),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
                     child: Container(
@@ -107,22 +107,27 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                    GestureDetector(
+                  GestureDetector(
                     onTap: () {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ForgotPasswordPage(word: widget.word,)),
-                    );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ForgotPasswordPage(
+                                  word: widget.word,
+                                )),
+                      );
                     },
                     child: Container(
-                    constraints: BoxConstraints.loose(Size(double.infinity, 30)),
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: Text(
-                    'Quên mật khẩu?',
-                    style: TextStyle(fontSize: 16, color: Color(0xff3277D8)),
+                      constraints:
+                          BoxConstraints.loose(Size(double.infinity, 30)),
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: Text(
+                        'Quên mật khẩu?',
+                        style:
+                            TextStyle(fontSize: 16, color: Color(0xff3277D8)),
+                      ),
                     ),
-                    ),
-                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
@@ -143,33 +148,36 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                   Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: RichText(
-                    text: TextSpan(
-                        text: '      Bạn là người mới? ',
-                        style: TextStyle(color: Color(0xff606470), fontSize: 16),
-                        children: <TextSpan>[
-                          TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(word:widget.word)));
-                                },
-                              text: 'Đăng ký tài khoản mới',
-                              style: TextStyle(
-                                  color: Color(0xff3277D8), fontSize: 16
-                                  )
-                              )
-                            ]
-                        )
-                    ),
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                            text: '    Bạn là người mới? ',
+                            style: TextStyle(
+                                color: Color(0xff606470), fontSize: 16),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RegisterPage(
+                                                      word: widget.word)));
+                                    },
+                                  text: 'Đăng ký tài khoản mới',
+                                  style: TextStyle(
+                                      color: Color(0xff3277D8), fontSize: 16))
+                            ])),
                   )
-                    ],
-                  ),
-                )),
-          ),
-        );
-      }
+                ],
+              ),
+            )),
+      ),
+    );
+  }
 
   void onToggleSHowPass() {
     setState(() {
@@ -194,6 +202,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
   }
+
   Future<void> login() async {
     final Map<String, dynamic> data = {
       'userName': _userController.text,
@@ -214,16 +223,15 @@ class _LoginPageState extends State<LoginPage> {
       final Map<String, dynamic> responseData = json.decode(response.body);
       if (responseData['token'] != null) {
         TokenManager.setToken(responseData['token']);
-        if(widget.word!="fake")
-        {
-        Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => WordDetailPage(word: widget.word))); 
+        if (widget.word != "fake") {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WordDetailPage(word: widget.word)));
+        } else {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => MapSample()));
         }
-        else
-        {
-          Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MapSample()));
-        }           
       } else {
         debugPrint("Error: ${response.statusCode}");
         debugPrint("Response body: ${response.body}");
