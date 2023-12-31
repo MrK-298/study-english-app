@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String userName = "";
   String email = "";
   int userId = 0;
-  int _currentIndex = 0;
+  int _currentIndex = 2;
   @override
   void initState() {
     super.initState();

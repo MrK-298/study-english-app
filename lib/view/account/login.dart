@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
                     child: RichText(
                     text: TextSpan(
-                        text: 'Bạn là người mới? ',
+                        text: '      Bạn là người mới? ',
                         style: TextStyle(color: Color(0xff606470), fontSize: 16),
                         children: <TextSpan>[
                           TextSpan(

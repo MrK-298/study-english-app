@@ -18,7 +18,7 @@ class _ListWordState extends State<ListWordPage>{
   late Future<List<Word>> futureWords;
   int userid = 0;
   late FlutterTts _flutterTts;
-  int _currentIndex = 0;
+  int _currentIndex = 1;
   @override
   void initState() {
     super.initState();

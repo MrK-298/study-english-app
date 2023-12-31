@@ -185,6 +185,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
                     onPressed: changePassword,
                     child: Text(
                       'Đổi mật khẩu',

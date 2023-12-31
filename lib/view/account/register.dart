@@ -153,6 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: Colors.blue),
                           onPressed: register,
                           child: Text(
                             'Đăng ký',

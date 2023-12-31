@@ -2,6 +2,7 @@ import 'package:dictionaryx/dictionary_reduced_msa.dart';
 import 'package:english/data/partofspeechdata.dart';
 import 'package:english/data/token.dart';
 import 'package:english/data/word.dart';
+import 'package:english/services/schedulenotification.dart';
 import 'package:english/view/account/profile.dart';
 import 'package:english/view/listword.dart';
 import 'package:english/view/account/login.dart';
@@ -11,7 +12,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
-
+import 'package:timezone/data/latest.dart' as tz;
+import 'dart:math';
 class WordDetailPage extends StatefulWidget {
   final String word;
 
@@ -24,6 +26,7 @@ class _WordDetailState extends State<WordDetailPage> {
   var entry;
   String word = "";
   String pronunciationword = "";
+  List<String> randomword = [];
   List<String> pronunciations = [];
   List<PartOfSpeechData> partsOfSpeech = [];
   List<String> definitions = [];
@@ -45,6 +48,8 @@ class _WordDetailState extends State<WordDetailPage> {
     var dMSAJson = DictionaryReducedMSA();
     entry = dMSAJson.getEntry(widget.word);
     wordSavedController = StreamController<String>.broadcast();
+    NotificationService().initNotification(context);
+    tz.initializeTimeZones();
     _flutterTts = FlutterTts();
     resetstatus();
     getWordDetails();
@@ -216,6 +221,7 @@ class _WordDetailState extends State<WordDetailPage> {
       for (var wordsave in words) {
         if (wordsave.word == widget.word && wordsave.userId == userid) {
           setState(() {
+            randomword.add(wordsave.word);
             wordid = wordsave.id;
             isWordSaved = true;
           });
@@ -233,7 +239,22 @@ class _WordDetailState extends State<WordDetailPage> {
       final out2 = await decodetoken(TokenManager.getToken());
     }
   }
-
+  //
+  void waitrandom() async{
+    final out3 = await getAllWords();
+    if(TokenManager.getToken()!="")
+    {
+      String random = getRandomWord(randomword);
+      String translateword = await translatetext(random);
+      NotificationService notificationService = NotificationService();
+      notificationService.scheduleNotification(title: random, body: translateword);
+    }
+  }
+  //random từ
+  String getRandomWord(List<String> wordList) {
+    int randomIndex = Random().nextInt(wordList.length);
+    return wordList[randomIndex];
+  }
   //Lấy chi tiết từ
   Future<void> getWordDetails() async {
     final response = await http.get(
@@ -250,7 +271,7 @@ class _WordDetailState extends State<WordDetailPage> {
         word = data[0]['word'];       
         pronunciationword = data[0]['phonetic'].toString();
         translateword(word);
-        getAllWords();
+        waitrandom();
         pronunciations.add(data[0]['phonetic'].toString());
         for (var meaning in data[0]['meanings']) {
           List<DefinitionData> meaningDefinitions = [];

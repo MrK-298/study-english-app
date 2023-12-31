@@ -33,6 +33,7 @@ class MapSampleState extends State<MapSample> {
   final DictReducedSA dict = DictReducedSA();
   int _currentIndex = 0;
   bool shouldShowButton = false;
+  TextEditingController textEditing = new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -47,31 +48,37 @@ class MapSampleState extends State<MapSample> {
         appBar: AppBar(
           title: Text('Stydy English'),
         ),
-        body: Center(
+       body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Autocomplete<String>(
-                  optionsBuilder: (TextEditingValue textEditing) {
-                    if (textEditing.text == '') {
-                      return const Iterable<String>.empty();
-                    }
-                    return dict.words.where((String item) {
-                      return item.contains(textEditing.text.toLowerCase());
-                    });
-                  },
-                  onSelected: (String selectedItem) {
-                    Navigator.push(
+                Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300], // Màu xám
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Autocomplete<String>(
+                    optionsBuilder: (textEditing) {
+                      if (textEditing.text == '') {
+                        return const Iterable<String>.empty();
+                      }
+                      return dict.words.where((String item) {
+                        return item.contains(textEditing.text.toLowerCase());
+                      });
+                    },
+                    onSelected: (String selectedItem) {
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                WordDetailPage(word: selectedItem)));
-                  },
-                ),
-                SizedBox(
-                  height: 100,
+                          builder: (context) =>
+                              WordDetailPage(word: selectedItem),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

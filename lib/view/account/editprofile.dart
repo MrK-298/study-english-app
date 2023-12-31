@@ -25,7 +25,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   TextEditingController nameController = new TextEditingController();
   String email = "";
   String userName = "";
-  int _currentIndex = 0;
+  int _currentIndex = 3;
   Future<void> changeProfile() async {
     // Kiểm tra nếu chuyến đi đã được chấp nhận rồi
 

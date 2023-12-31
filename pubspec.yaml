@@ -38,6 +38,8 @@ dependencies:
   dictionaryx: ^0.3.5
   http: ^1.1.0
   flutter_tts: ^3.7.0
+  flutter_local_notifications: ^9.6.0
+  timezone: ^0.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
