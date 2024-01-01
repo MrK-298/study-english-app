@@ -1,5 +1,5 @@
 import 'package:english/data/token.dart';
-import 'package:english/view/WordDetail.dart';
+import 'package:english/view/word/WordDetail.dart';
 import 'package:english/view/account/profile.dart';
 import 'package:english/view/main.dart';
 import 'package:flutter/material.dart';

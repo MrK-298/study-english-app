@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:english/data/token.dart';
-import 'package:english/view/WordDetail.dart';
+import 'package:english/view/quiz/quiz_screen.dart';
+import 'package:english/view/word/WordDetail.dart';
 import 'package:english/view/account/profile.dart';
-import 'package:english/view/listword.dart';
+import 'package:english/view/word/listword.dart';
 import 'package:flutter/material.dart';
 import 'package:english/sdk/DictReduceSA.dart';
 

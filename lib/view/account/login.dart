@@ -1,4 +1,4 @@
-import 'package:english/view/WordDetail.dart';
+import 'package:english/view/word/WordDetail.dart';
 import 'package:english/view/account/forgotpassword.dart';
 import 'package:english/view/account/register.dart';
 import 'package:english/view/main.dart';

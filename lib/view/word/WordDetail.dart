@@ -4,7 +4,7 @@ import 'package:english/data/token.dart';
 import 'package:english/data/word.dart';
 import 'package:english/services/schedulenotification.dart';
 import 'package:english/view/account/profile.dart';
-import 'package:english/view/listword.dart';
+import 'package:english/view/word/listword.dart';
 import 'package:english/view/account/login.dart';
 import 'package:english/view/main.dart';
 import 'package:flutter/material.dart';
