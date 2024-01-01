@@ -1,5 +1,5 @@
 import 'package:english/data/models/question_model.dart';
-import 'package:english/view/color/color.dart';
+import 'package:english/color/color.dart';
 import 'package:flutter/material.dart';
 Widget questionWidget(
   QuestionModel questionModel, void Function() function, bool presed) {

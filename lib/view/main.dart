@@ -1,12 +1,15 @@
 import 'dart:io';
 import 'package:english/data/token.dart';
-import 'package:english/view/quiz/quiz_screen.dart';
+import 'package:english/data/topic.dart';
+import 'package:english/view/account/login.dart';
+import 'package:english/view/homework/homework_screen.dart';
 import 'package:english/view/word/WordDetail.dart';
 import 'package:english/view/account/profile.dart';
 import 'package:english/view/word/listword.dart';
 import 'package:flutter/material.dart';
 import 'package:english/sdk/DictReduceSA.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
   runApp(
@@ -34,6 +37,7 @@ class MapSampleState extends State<MapSample> {
   final DictReducedSA dict = DictReducedSA();
   int _currentIndex = 0;
   bool shouldShowButton = false;
+  List<Topic> topics = [];
   TextEditingController textEditing = new TextEditingController();
   @override
   void initState() {
@@ -41,8 +45,23 @@ class MapSampleState extends State<MapSample> {
     if (TokenManager.getToken() != "") {
       shouldShowButton = true;
     }
+    getAllTopics();
   }
+  Future<void> getAllTopics() async {
+    final response = await http.get(
+      Uri.parse('https://10.0.2.2:7142/api/Topic/GetAllTopics'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
 
+    if (response.statusCode == 200) {
+      final List<dynamic> topicData = json.decode(response.body);
+      setState(() {
+        topics = topicData.map((data) => Topic.fromJson(data)).toList();
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -76,132 +95,111 @@ class MapSampleState extends State<MapSample> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300], // Màu xám
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Autocomplete<String>(
-                    optionsBuilder: (textEditing) {
-                      if (textEditing.text == '') {
-                        return const Iterable<String>.empty();
-                      }
-                      return dict.words.where((String item) {
-                        return item.contains(textEditing.text.toLowerCase());
-                      });
-                    },
-                    onSelected: (String selectedItem) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              WordDetailPage(word: selectedItem),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                //-------------
-                SizedBox(height: 10),
-                Column(
-                  children: [
-                    Text(
-                      'Trắc nghiệm',
-                      style: TextStyle(fontSize: 18),
+        body: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverToBoxAdapter(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 6), // Điều chỉnh padding
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2.0), // Điều chỉnh borderRadius
                     ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.timer),
-                    title: Text('Exam 1'),
-                    subtitle: Text('Ngữ pháp'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.create),
-                      onPressed: () {
-                        // Xử lý khi nút được nhấn
+                    child: Autocomplete<String>(
+                      optionsBuilder: (textEditing) {
+                        if (textEditing.text == '') {
+                          return const Iterable<String>.empty();
+                        }
+                        return dict.words.where((String item) {
+                          return item.contains(textEditing.text.toLowerCase());
+                        });
                       },
-                    ),
-                  ),
-                ),
-                SizedBox(height: 10),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.timer),
-                    title: Text('Exam 2'),
-                    subtitle: Text('Mệnh đề quan hệ'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.create),
-                      onPressed: () {
-                        // Xử lý khi nút được nhấn
-                      },
-                    ),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    title: Text('Exam 3'),
-                    subtitle: Text('Câu bị động'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.create),
-                      onPressed: () {
-                        // Xử lý khi nút được nhấn
-                      },
-                    ),
-                    leading: PopupMenuButton<String>(
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'option1',
-                          child: Row(
-                            children: [
-                              Icon(Icons.timer),
-                              SizedBox(width: 8),
-                              Text('10 phút'),
-                            ],
+                      onSelected: (String selectedItem) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WordDetailPage(word: selectedItem),
                           ),
-                        ),
-                        PopupMenuItem(
-                          value: 'option2',
-                          child: Row(
-                            children: [
-                              Icon(Icons.timer),
-                              SizedBox(width: 8),
-                              Text('20 phút'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'option3',
-                          child: Row(
-                            children: [
-                              Icon(Icons.timer),
-                              SizedBox(width: 8),
-                              Text('30 phút'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      onSelected: (String value) {
-                        // Xử lý khi lựa chọn được thực hiện
-                        print('Selected: $value');
+                        );
                       },
                     ),
                   ),
                 ),
-
-                //----------
-              ],
+                SliverToBoxAdapter(
+                  child: SizedBox(height: 30),
+                ),
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Chủ đề học tập',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            body: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: ListView.builder(
+                itemCount: topics.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 3,
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    child: ListTile(
+                      title: Text(topics[index].title),
+                      subtitle: Text(topics[index].content),
+                      onTap: () {
+                        if(TokenManager.getToken()=="")
+                        {
+                         showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Bạn muốn xem những chủ đề học tập?'),
+                                content: Text('Bạn phải đăng nhập mới sử dụng được chức năng này'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Quay lại', style: TextStyle(color: Colors.red)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // Đóng hộp thoại
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Có', style: TextStyle(color: Colors.green)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(); // Đóng hộp thoại
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => LoginPage(
+                                                    word: "fake",
+                                                  )));
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );                       
+                        }
+                        else{
+                           Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailTopicPage(topicId: topics[index].id),
+                          ),
+                        );
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
         bottomNavigationBar: shouldShowButton
             ? BottomNavigationBar(
                 fixedColor: Colors.black,

@@ -1,10 +1,13 @@
+import 'package:english/data/token.dart';
 import 'package:english/view/quiz/result_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:english/view/color/color.dart';
+import 'package:english/color/color.dart';
 import 'package:english/data/question_list.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 class QuizzScreen extends StatefulWidget {
-
+  final int homeworkId;
+  QuizzScreen({required this.homeworkId});
   @override
   _QuizzScreenState createState() => _QuizzScreenState();
 }
@@ -12,15 +15,60 @@ class QuizzScreen extends StatefulWidget {
 class _QuizzScreenState extends State<QuizzScreen> {
   int question_pos = 0;
   int score = 0;
+  int userId = 0;
   bool btnPressed = false;
   PageController? _controller;
   String btnText = "Next Question";
   bool answered = false;
+   //Chức năng giải mã
+  Future<void> decodetoken(String Token) async {
+    final response = await http.post(
+      Uri.parse('https://10.0.2.2:7142/api/Auth/DecodeToken?token=$Token'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      setState(() {
+        userId = int.parse(responseData['userId']);
+      });
+    } else {
+      debugPrint("Error: ${response.statusCode}");
+      debugPrint("Response body: ${response.body}");
+    }
+  }
+   Future<void> savehomework() async {   
+      final Map<String, dynamic> data = {
+        'homeworkId': widget.homeworkId,
+        'score': score,
+        'userId': userId,
+      };
+      final response = await http.post(
+        Uri.parse('https://10.0.2.2:7142/api/Homework/DoHomework'),
+        body: jsonEncode(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {        
+         Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ResultScreen(score: score,)));
+      } else {
+        debugPrint("Error: ${response.statusCode}");
+        debugPrint("Response body: ${response.body}");
+      }
+    } 
+  
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _controller = PageController(initialPage: 0);
+     decodetoken(TokenManager.getToken());
   }
 
   @override
@@ -120,10 +168,7 @@ class _QuizzScreenState extends State<QuizzScreen> {
                   RawMaterialButton(
                     onPressed: () {
                       if (_controller!.page?.toInt() == questions.length - 1) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ResultScreen(score: score,)));
+                        savehomework();
                       } else {
                         _controller!.nextPage(
                             duration: Duration(milliseconds: 250),

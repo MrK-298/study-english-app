@@ -1,4 +1,7 @@
-import 'package:english/view/color/color.dart';
+import 'package:english/color/color.dart';
+import 'package:english/view/account/profile.dart';
+import 'package:english/view/main.dart';
+import 'package:english/view/word/listword.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class ResultScreen extends StatefulWidget {
@@ -10,6 +13,7 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,6 +62,46 @@ class _ResultScreenState extends State<ResultScreen> {
             height: 100.0,
           ),       
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        fixedColor: Colors.black,
+        type: BottomNavigationBarType.fixed,
+        iconSize: 30,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Trang chủ',
+            backgroundColor: Colors.pink,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: 'Danh sách từ',
+            backgroundColor: Colors.pink,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Tài Khoản',
+            backgroundColor: Colors.cyanAccent,
+          ),
+        ],
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          if (index == 0) {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => MapSample()));
+          }
+          if (index == 1) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ListWordPage()));
+          }
+          if (index == 2) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage()));
+          }
+        },
       ),
     );
   }
