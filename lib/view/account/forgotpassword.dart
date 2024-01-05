@@ -49,7 +49,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       'verificationCode': verificationCodeController.text,
     };
 
-    final response = await http.post(
+    final response = await http.put(
       Uri.parse('https://10.0.2.2:7142/api/Auth/resetPassword'),
       body: jsonEncode(data), // Chuyển đổi dữ liệu thành JSON
       headers: {

@@ -1,7 +1,7 @@
 import 'package:english/data/homework.dart';
 import 'package:english/data/token.dart';
-import 'package:english/view/quiz/main_menu.dart';
 import 'package:english/view/quiz/quiz_screen.dart';
+import 'package:english/view/quiz/seeresult.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -149,12 +149,24 @@ class _DetailTopicPageState extends State<DetailTopicPage> {
                 child: ListTile(
                   title: Text(homework.title),
                   onTap: () {
+                    if(homework.isDone==false)
+                    {
                      Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MainMenu(topicId: widget.topicId,homeworkId: homework.id,),
+                            builder: (context) => QuizzScreen(topicId: widget.topicId,homeworkId: homework.id,),
                           ),
                         );
+                    }
+                    else
+                    {
+                       Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SeeResultScreen(topicId: widget.topicId,homeworkId: homework.id,),
+                          ),
+                        );
+                    }
                   },
                 ),
               );

@@ -1,22 +1,21 @@
 import 'package:english/data/homework.dart';
 import 'package:english/data/models/question_model.dart';
-import 'package:english/data/token.dart';
 import 'package:english/view/homework/homework_screen.dart';
-import 'package:english/view/quiz/result_screen.dart';
+import 'package:english/view/quiz/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:english/color/color.dart';
 import 'package:english/data/question_list.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-class QuizzScreen extends StatefulWidget {
+class SeeResultScreen extends StatefulWidget {
   final int topicId;
   final int homeworkId;
-  QuizzScreen({required this.topicId,required this.homeworkId});
+  SeeResultScreen({required this.topicId,required this.homeworkId});
   @override
-  _QuizzScreenState createState() => _QuizzScreenState();
+  _SeeResultScreenState createState() => _SeeResultScreenState();
 }
 
-class _QuizzScreenState extends State<QuizzScreen> {
+class _SeeResultScreenState extends State<SeeResultScreen> {
   List<Homework> homeworks = [];
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int question_pos = 0;
@@ -25,15 +24,15 @@ class _QuizzScreenState extends State<QuizzScreen> {
   bool btnPressed = false;
   PageController? _controller;
   String btnText = "Next Question";
-  bool answered = false;
-  Map<int, List<QuestionModel>> homeworkQuestionsMap = {
+  bool answered = true;
+   Map<int, List<QuestionModel>> homeworkQuestionsMap = {
     14: questions,
     15: questions1,
     16: questions2,
   };
 
   List<QuestionModel> selectedQuestions = [];
-  Future<void> getAllHomeworks() async {
+   Future<void> getAllHomeworks() async {
     final response = await http.get(
       Uri.parse('https://10.0.2.2:7142/api/Topic/GetHomework?id=${widget.topicId}'),
       headers: {
@@ -48,55 +47,12 @@ class _QuizzScreenState extends State<QuizzScreen> {
       });
     }
   }
-   //Chức năng giải mã
-  Future<void> decodetoken(String Token) async {
-    final response = await http.post(
-      Uri.parse('https://10.0.2.2:7142/api/Auth/DecodeToken?token=$Token'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      setState(() {
-        userId = int.parse(responseData['userId']);
-      });
-    } else {
-      debugPrint("Error: ${response.statusCode}");
-      debugPrint("Response body: ${response.body}");
-    }
-  }
-   Future<void> savehomework() async {   
-      final Map<String, dynamic> data = {
-        'homeworkId': widget.homeworkId,
-        'score': score,
-        'userId': userId,
-      };
-      final response = await http.post(
-        Uri.parse('https://10.0.2.2:7142/api/Homework/DoHomework'),
-        body: jsonEncode(data),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
-      if (response.statusCode == 200) {        
-         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ResultScreen(topicId: widget.topicId,score: score,)));
-      } else {
-        debugPrint("Error: ${response.statusCode}");
-        debugPrint("Response body: ${response.body}");
-      }
-    } 
   
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _controller = PageController(initialPage: 0);
-    decodetoken(TokenManager.getToken());
     getAllHomeworks();
     List<QuestionModel>? questions = homeworkQuestionsMap[widget.homeworkId];
     if (questions != null) {
@@ -107,7 +63,7 @@ class _QuizzScreenState extends State<QuizzScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: _scaffoldKey,
+      key: _scaffoldKey,
         appBar: AppBar(         
           title: Text('Quizz app'),          
         ),
@@ -141,7 +97,7 @@ class _QuizzScreenState extends State<QuizzScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => QuizzScreen(topicId: widget.topicId, homeworkId: homework.id),
+                            builder: (context) => SeeResultScreen(topicId: widget.topicId, homeworkId: homework.id),
                           ),
                         );
                       },
@@ -160,11 +116,11 @@ class _QuizzScreenState extends State<QuizzScreen> {
             onPageChanged: (page) {
               if (page == selectedQuestions.length - 1) {
                 setState(() {
-                  btnText = "See Results";
+                  btnText = "Do it again";
                 });
               }
               setState(() {
-                answered = false;
+                answered = true;
               });
             },
             physics: new NeverScrollableScrollPhysics(),
@@ -202,51 +158,41 @@ class _QuizzScreenState extends State<QuizzScreen> {
                     ),
                   ),
                   for (int i = 0; i < selectedQuestions[index].answers!.length; i++)
-                    Container(
-                      width: double.infinity,
-                      height: 50.0,
-                      margin: EdgeInsets.only(
-                          bottom: 20.0, left: 12.0, right: 12.0),
-                      child: RawMaterialButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                  Container(
+                    width: double.infinity,
+                    height: 50.0,
+                    margin: EdgeInsets.only(bottom: 20.0, left: 12.0, right: 12.0),
+                    child: RawMaterialButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      fillColor: (answered && selectedQuestions[index].answers!.values.toList()[i])
+                          ? Colors.green // Màu xanh cho đáp án đúng
+                          : (answered && !selectedQuestions[index].answers!.values.toList()[i])
+                              ? Colors.red // Màu đỏ cho đáp án sai
+                              : AppColor.secondaryColor, // Màu mặc định
+                      onPressed: null, // Không cần thiết để bắt sự kiện
+                      child: Text(
+                        selectedQuestions[index].answers!.keys.toList()[i],
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18.0,
                         ),
-                        fillColor: btnPressed
-                            ? selectedQuestions[index].answers!.values.toList()[i]
-                                ? Colors.green
-                                : Colors.red
-                            : AppColor.secondaryColor,
-                        onPressed: !answered
-                            ? () {
-                                if (selectedQuestions[index]
-                                    .answers!
-                                    .values
-                                    .toList()[i]) {
-                                  score++;
-                                  print("yes");
-                                } else {
-                                  print("no");
-                                }
-                                setState(() {
-                                  btnPressed = true;
-                                  answered = true;
-                                });
-                              }
-                            : null,
-                        child: Text(selectedQuestions[index].answers!.keys.toList()[i],
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                            )),
                       ),
                     ),
+                  ),
                   SizedBox(
                     height: 20.0,
                   ),
                   RawMaterialButton(
                     onPressed: () {
-                      if (_controller!.page?.toInt() == selectedQuestions.length - 1) {
-                        savehomework();
+                      if (_controller!.page?.toInt() == questions.length - 1) {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => QuizzScreen(topicId: widget.topicId, homeworkId: widget.homeworkId),
+                          ),
+                        );
                       } else {
                         _controller!.nextPage(
                             duration: Duration(milliseconds: 250),

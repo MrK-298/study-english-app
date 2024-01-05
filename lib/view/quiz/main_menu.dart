@@ -77,7 +77,7 @@ class _MainMenuState extends State<MainMenu> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => QuizzScreen(homeworkId: widget.homeworkId,),
+                          builder: (context) => QuizzScreen(topicId: widget.topicId,homeworkId: widget.homeworkId,),
                         ));
                   },
                   shape: const StadiumBorder(),

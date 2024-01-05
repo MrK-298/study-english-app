@@ -1,12 +1,14 @@
 import 'package:english/color/color.dart';
 import 'package:english/view/account/profile.dart';
+import 'package:english/view/homework/homework_screen.dart';
 import 'package:english/view/main.dart';
 import 'package:english/view/word/listword.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class ResultScreen extends StatefulWidget {
+  final int topicId;
   int score;
-  ResultScreen({required this.score});
+  ResultScreen({required this.topicId,required this.score});
 
   @override
   _ResultScreenState createState() => _ResultScreenState();
@@ -59,8 +61,25 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
           ),
           SizedBox(
-            height: 100.0,
-          ),       
+            height: 20.0,
+          ),   
+          ElevatedButton(
+            onPressed: () {
+               Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailTopicPage(topicId: widget.topicId),
+                          ),
+                        );
+            },
+            child: Text(
+              'Danh sách bài tập',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          )    
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

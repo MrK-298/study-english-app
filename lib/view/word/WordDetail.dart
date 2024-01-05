@@ -246,7 +246,7 @@ class _WordDetailState extends State<WordDetailPage> {
   //
   void waitrandom() async {
     final out3 = await getAllWords();
-    if (TokenManager.getToken() != "") {
+    if (TokenManager.getToken() != "" && randomword != []) {
       String random = getRandomWord(randomword);
       String translateword = await translatetext(random);
       NotificationService notificationService = NotificationService();
@@ -463,13 +463,34 @@ class _WordDetailState extends State<WordDetailPage> {
                                   ),
                                 ),
                               if (definitionData.example.isNotEmpty)
-                                Card(
-                                  child: ListTile(
-                                    title: Text(
-                                        '\nVí dụ: ${definitionData.example}',
-                                        style: TextStyle(
-                                            fontSize: 15, color: Colors.black)),
-                                  ),
+                                 FutureBuilder<String>(
+                                  future:
+                                      translatetext(definitionData.definition),
+                                    builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      // Hiển thị Text khi Future hoàn thành
+                                      return Card(
+                                        elevation: 10,
+                                        child: ListTile(
+                                            title: Text(
+                                              'Ví dụ: ${definitionData.example})',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.black),
+                                            ),
+                                            subtitle: Text(
+                                              ' (${snapshot.data})',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.purpleAccent),
+                                            )),
+                                      );
+                                    } else {
+                                      // Hiển thị một Widget khác trong quá trình loading
+                                      return CircularProgressIndicator();
+                                    }
+                                  },
                                 ),
                             ],
                           ),

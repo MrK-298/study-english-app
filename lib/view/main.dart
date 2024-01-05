@@ -186,7 +186,7 @@ class MapSampleState extends State<MapSample> {
                           );                       
                         }
                         else{
-                           Navigator.push(
+                          Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => DetailTopicPage(topicId: topics[index].id),
