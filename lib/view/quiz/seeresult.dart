@@ -7,10 +7,11 @@ import 'package:english/color/color.dart';
 import 'package:english/data/question_list.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 class SeeResultScreen extends StatefulWidget {
   final int topicId;
   final int homeworkId;
-  SeeResultScreen({required this.topicId,required this.homeworkId});
+  SeeResultScreen({required this.topicId, required this.homeworkId});
   @override
   _SeeResultScreenState createState() => _SeeResultScreenState();
 }
@@ -25,16 +26,17 @@ class _SeeResultScreenState extends State<SeeResultScreen> {
   PageController? _controller;
   String btnText = "Next Question";
   bool answered = true;
-   Map<int, List<QuestionModel>> homeworkQuestionsMap = {
-    14: questions,
-    15: questions1,
-    16: questions2,
+  Map<int, List<QuestionModel>> homeworkQuestionsMap = {
+    1: questions,
+    2: questions1,
+    3: questions2,
   };
 
   List<QuestionModel> selectedQuestions = [];
-   Future<void> getAllHomeworks() async {
+  Future<void> getAllHomeworks() async {
     final response = await http.get(
-      Uri.parse('https://10.0.2.2:7142/api/Topic/GetHomework?id=${widget.topicId}'),
+      Uri.parse(
+          'https://10.0.2.2:7142/api/Topic/GetHomework?id=${widget.topicId}'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -43,11 +45,12 @@ class _SeeResultScreenState extends State<SeeResultScreen> {
     if (response.statusCode == 200) {
       final List<dynamic> homeworksData = json.decode(response.body);
       setState(() {
-          homeworks = homeworksData.map((data) => Homework.fromJson(data)).toList();    
+        homeworks =
+            homeworksData.map((data) => Homework.fromJson(data)).toList();
       });
     }
   }
-  
+
   @override
   void initState() {
     // TODO: implement initState
@@ -64,50 +67,65 @@ class _SeeResultScreenState extends State<SeeResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-        appBar: AppBar(         
-          title: Text('Quizz app'),          
-        ),
-       drawer:Drawer(
-          child: Container(
-            color: Color.fromARGB(255, 121, 210, 142),
-            child: ListView(
-              children: [
-                // Thêm nút quay lại
-                ListTile(
-                  leading: Icon(Icons.arrow_back, color: Colors.white),
-                  title: Text('Back', style: TextStyle(color: Colors.white)),
-                  onTap: () {
+      appBar: AppBar(
+        title: Text('Quizz app'),
+      ),
+      drawer: Drawer(
+        child: Container(
+          color: Color.fromARGB(255, 121, 210, 142),
+          child: ListView(
+            children: [
+              // Thêm nút quay lại
+              ListTile(
+                leading: Icon(Icons.arrow_back, color: Colors.white),
+                title: Text('Back', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DetailTopicPage(topicId: widget.topicId),
+                    ),
+                  ); // Đóng Drawer
+                },
+              ),
+
+              UserAccountsDrawerHeader(
+                accountName: const Text('do data'),
+                accountEmail: const Text('do data'),
+                currentAccountPicture: CircleAvatar(
+                  child: ClipOval(
+                    child: Image.asset('assets/image/logo.png'),
+                  ),
+                ),
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(210, 91, 110, 1.0)),
+              ),
+
+              // Danh sách các mục khác trong Drawer
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: homeworks.length,
+                itemBuilder: (context, index) {
+                  final homework = homeworks[index];
+                  return ListTile(
+                    title: Text(homework.title),
+                    onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailTopicPage(topicId: widget.topicId),
-                          ),
-                        ); // Đóng Drawer
-                  },
-                ),
-                // Danh sách các mục khác trong Drawer
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: homeworks.length,
-                  itemBuilder: (context, index) {
-                    final homework = homeworks[index];
-                    return ListTile(
-                      title: Text(homework.title),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SeeResultScreen(topicId: widget.topicId, homeworkId: homework.id),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            ),
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SeeResultScreen(
+                              topicId: widget.topicId, homeworkId: homework.id),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ),
+      ),
       backgroundColor: AppColor.pripmaryColor,
       body: Padding(
           padding: const EdgeInsets.all(18.0),
@@ -157,40 +175,53 @@ class _SeeResultScreenState extends State<SeeResultScreen> {
                       ),
                     ),
                   ),
-                  for (int i = 0; i < selectedQuestions[index].answers!.length; i++)
-                  Container(
-                    width: double.infinity,
-                    height: 50.0,
-                    margin: EdgeInsets.only(bottom: 20.0, left: 12.0, right: 12.0),
-                    child: RawMaterialButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      fillColor: (answered && selectedQuestions[index].answers!.values.toList()[i])
-                          ? Colors.green // Màu xanh cho đáp án đúng
-                          : (answered && !selectedQuestions[index].answers!.values.toList()[i])
-                              ? Colors.red // Màu đỏ cho đáp án sai
-                              : AppColor.secondaryColor, // Màu mặc định
-                      onPressed: null, // Không cần thiết để bắt sự kiện
-                      child: Text(
-                        selectedQuestions[index].answers!.keys.toList()[i],
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0,
+                  for (int i = 0;
+                      i < selectedQuestions[index].answers!.length;
+                      i++)
+                    Container(
+                      width: double.infinity,
+                      height: 50.0,
+                      margin: EdgeInsets.only(
+                          bottom: 20.0, left: 12.0, right: 12.0),
+                      child: RawMaterialButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        fillColor: (answered &&
+                                selectedQuestions[index]
+                                    .answers!
+                                    .values
+                                    .toList()[i])
+                            ? Colors.green // Màu xanh cho đáp án đúng
+                            : (answered &&
+                                    !selectedQuestions[index]
+                                        .answers!
+                                        .values
+                                        .toList()[i])
+                                ? Colors.red // Màu đỏ cho đáp án sai
+                                : AppColor.secondaryColor, // Màu mặc định
+                        onPressed: null, // Không cần thiết để bắt sự kiện
+                        child: Text(
+                          selectedQuestions[index].answers!.keys.toList()[i],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   SizedBox(
                     height: 20.0,
                   ),
                   RawMaterialButton(
                     onPressed: () {
                       if (_controller!.page?.toInt() == questions.length - 1) {
-                          Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => QuizzScreen(topicId: widget.topicId, homeworkId: widget.homeworkId),
+                            builder: (context) => QuizzScreen(
+                                topicId: widget.topicId,
+                                homeworkId: widget.homeworkId),
                           ),
                         );
                       } else {
