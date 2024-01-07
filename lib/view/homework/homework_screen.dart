@@ -1,5 +1,6 @@
 import 'package:english/data/homework.dart';
 import 'package:english/data/token.dart';
+import 'package:english/view/main.dart';
 import 'package:english/view/quiz/quiz_screen.dart';
 import 'package:english/view/quiz/seeresult.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +107,8 @@ class _DetailTopicPageState extends State<DetailTopicPage> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => MapSample()));
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
@@ -151,7 +153,7 @@ class _DetailTopicPageState extends State<DetailTopicPage> {
                   onTap: () {
                     if(homework.isDone==false)
                     {
-                     Navigator.push(
+                     Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => QuizzScreen(topicId: widget.topicId,homeworkId: homework.id,),

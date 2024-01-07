@@ -1,4 +1,5 @@
 import 'package:english/data/token.dart';
+import 'package:english/services/schedulenotification.dart';
 import 'package:english/view/word/WordDetail.dart';
 import 'package:english/view/account/profile.dart';
 import 'package:english/view/main.dart';
@@ -8,7 +9,8 @@ import 'dart:convert';
 import 'package:english/data/word.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:async';
-
+import 'dart:math';
+import 'package:timezone/data/latest.dart' as tz;
 class ListWordPage extends StatefulWidget {
   @override
   _ListWordState createState() => _ListWordState();
@@ -19,11 +21,15 @@ class _ListWordState extends State<ListWordPage> {
   late Future<List<Word>> futureWords;
   int userid = 0;
   late FlutterTts _flutterTts;
+  TimeOfDay? selectedDateTime;
+  List<String> randomword = [];
   int _currentIndex = 1;
   @override
   void initState() {
     super.initState();
     getuser();
+    NotificationService().initNotification(context);
+    tz.initializeTimeZones();
     futureWords = getWordsByUserId();
     wordSavedController = StreamController<String>.broadcast();
     _flutterTts = FlutterTts();
@@ -77,13 +83,59 @@ class _ListWordState extends State<ListWordPage> {
           .where((word) => word['userId'] == userid)
           .map((word) => Word.fromJson(word))
           .toList();
-
+      for (var wordsave in words) {
+        if (wordsave.userId == userid) {
+          setState(() {
+            randomword.add(wordsave.word);
+          });
+        }
+      }
       return words;
     } else {
       throw Exception('Failed to load words');
     }
   }
+  //random từ
+  String getRandomWord(List<String> wordList) {
+    int randomIndex = Random().nextInt(wordList.length);
+    return wordList[randomIndex];
+  }
 
+  //datetimepicker
+   Future<void> selectDateTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+     if (picked != null && picked != selectedDateTime) {
+      setState(() {
+        selectedDateTime = picked;
+      });
+      String random = getRandomWord(randomword);
+      String translateword = await translatetext(random);
+      NotificationService notificationService = NotificationService();
+      notificationService.scheduleNotification(
+          title: random, body: translateword,selectedTime: selectedDateTime);
+     }
+  }
+   //Translate chuỗi
+  Future<String> translatetext(String text) async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.mymemory.translated.net/get?q=$text&langpair=en|vi'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = json.decode(response.body);
+      if (data.containsKey('responseData')) {
+        return data['responseData']['translatedText'];
+      }
+    }
+    return '';
+  }
   //Chức năng giải mã
   Future<void> decodetoken(String Token) async {
     final response = await http.post(
@@ -114,12 +166,16 @@ class _ListWordState extends State<ListWordPage> {
           },
           icon: Icon(Icons.arrow_back_ios),
         ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text('Từ của bạn'),
-          ],
-        ),
+        title: Text('Từ của bạn'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              // Gọi hàm để chọn thời gian
+              selectDateTime(context);
+            },
+            icon: Icon(Icons.access_time),
+          ),
+        ],     
       ),
       body: Column(children: [
         Expanded(

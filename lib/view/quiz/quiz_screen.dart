@@ -116,7 +116,6 @@ class _QuizzScreenState extends State<QuizzScreen> {
             color: Color.fromARGB(255, 121, 210, 142),
             child: ListView(
               children: [
-                // Thêm nút quay lại
                 ListTile(
                   leading: Icon(Icons.arrow_back, color: Colors.white),
                   title: Text('Back', style: TextStyle(color: Colors.white)),
@@ -128,7 +127,7 @@ class _QuizzScreenState extends State<QuizzScreen> {
                           ),
                         ); // Đóng Drawer
                   },
-                ),
+                ),              
                 // Danh sách các mục khác trong Drawer
                 ListView.builder(
                   shrinkWrap: true,

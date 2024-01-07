@@ -2,7 +2,6 @@ import 'package:dictionaryx/dictionary_reduced_msa.dart';
 import 'package:english/data/partofspeechdata.dart';
 import 'package:english/data/token.dart';
 import 'package:english/data/word.dart';
-import 'package:english/services/schedulenotification.dart';
 import 'package:english/view/account/profile.dart';
 import 'package:english/view/word/listword.dart';
 import 'package:english/view/account/login.dart';
@@ -12,8 +11,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'dart:math';
 
 class WordDetailPage extends StatefulWidget {
   final String word;
@@ -27,7 +24,6 @@ class _WordDetailState extends State<WordDetailPage> {
   var entry;
   String word = "";
   String pronunciationword = "";
-  List<String> randomword = [];
   List<String> pronunciations = [];
   List<PartOfSpeechData> partsOfSpeech = [];
   List<String> definitions = [];
@@ -49,8 +45,6 @@ class _WordDetailState extends State<WordDetailPage> {
     var dMSAJson = DictionaryReducedMSA();
     entry = dMSAJson.getEntry(widget.word);
     wordSavedController = StreamController<String>.broadcast();
-    NotificationService().initNotification(context);
-    tz.initializeTimeZones();
     _flutterTts = FlutterTts();
     resetstatus();
     getWordDetails();
@@ -219,10 +213,7 @@ class _WordDetailState extends State<WordDetailPage> {
       final List<dynamic> wordData = json.decode(response.body);
       List<Word> words = [];
       words = wordData.map((data) => Word.fromJson(data)).toList();
-      for (var wordsave in words) {
-        setState(() {
-          randomword.add(wordsave.word);
-        });
+      for (var wordsave in words) {     
         if (wordsave.word == widget.word && wordsave.userId == userid) {
           setState(() {
             wordid = wordsave.id;
@@ -243,24 +234,6 @@ class _WordDetailState extends State<WordDetailPage> {
     }
   }
 
-  //
-  void waitrandom() async {
-    final out3 = await getAllWords();
-    if (TokenManager.getToken() != "" && randomword != []) {
-      String random = getRandomWord(randomword);
-      String translateword = await translatetext(random);
-      NotificationService notificationService = NotificationService();
-      notificationService.scheduleNotification(
-          title: random, body: translateword);
-    }
-  }
-
-  //random từ
-  String getRandomWord(List<String> wordList) {
-    int randomIndex = Random().nextInt(wordList.length);
-    return wordList[randomIndex];
-  }
-
   //Lấy chi tiết từ
   Future<void> getWordDetails() async {
     final response = await http.get(
@@ -277,7 +250,7 @@ class _WordDetailState extends State<WordDetailPage> {
         word = data[0]['word'];
         pronunciationword = data[0]['phonetic'].toString();
         translateword(word);
-        waitrandom();
+        getAllWords();
         pronunciations.add(data[0]['phonetic'].toString());
         for (var meaning in data[0]['meanings']) {
           List<DefinitionData> meaningDefinitions = [];
@@ -465,7 +438,7 @@ class _WordDetailState extends State<WordDetailPage> {
                               if (definitionData.example.isNotEmpty)
                                  FutureBuilder<String>(
                                   future:
-                                      translatetext(definitionData.definition),
+                                      translatetext(definitionData.example),
                                     builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.done) {

@@ -1,8 +1,6 @@
 import 'package:english/view/word/WordDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/timezone.dart';
 
 class NotificationService {
@@ -47,37 +45,36 @@ class NotificationService {
     int id = 0,
     String? title,
     String? body,
+    TimeOfDay? selectedTime
   }) async {
+    late TimeOfDay time;
+    final String timezoneIdentifier = 'Asia/Ho_Chi_Minh';
+    final now = TZDateTime.now(getLocation(timezoneIdentifier));
+    if(selectedTime!=null)
+    {
+      time = selectedTime;
+    }
+   late TZDateTime scheduledDate = TZDateTime(
+    getLocation(timezoneIdentifier),
+    now.year,
+    now.month,
+    now.day,
+    time.hour,
+    time.minute,
+  );
+  if (scheduledDate.isBefore(now)) {
+    scheduledDate = scheduledDate.add(const Duration(days: 1));
+  }
     return notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.from(
-        _nextInstanceOfSpecificTime(),
-        tz.local,
-      ),
+      scheduledDate,
       await notificationDetails(),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       payload: title,
     );
-  }
-
-  TZDateTime _nextInstanceOfSpecificTime() {
-    final String timezoneIdentifier = 'Asia/Ho_Chi_Minh';
-    final now = TZDateTime.now(getLocation(timezoneIdentifier));
-    final scheduledDate = TZDateTime(
-      getLocation(timezoneIdentifier),
-      now.year,
-      now.month,
-      now.day,
-      13, //giờ
-      24, //phút
-    );
-    // Nếu thời điểm lên lịch đã qua, thì lên lịch cho ngày tiếp theo
-    return scheduledDate.isBefore(now)
-        ? scheduledDate.add(const Duration(days: 1))
-        : scheduledDate;
   }
 }
